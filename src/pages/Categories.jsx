@@ -74,11 +74,14 @@ export default function Categories() {
     }
 
     const handleSave = async (form) => {
-        setSaving(true); setErrors({}); setApiError('')
+        setSaving(true);
+        setErrors({});
+        setApiError('')
         try {
             if (modal === 'edit') await updateCategorie(selected.id, form)
             else await createCategorie(form)
-            setModal(null); load()
+            setModal(null)
+            load()
         } catch (err) {
             if (err.response?.status === 422) setErrors(err.response.data.errors)
             else setApiError(err.response?.data?.message || 'Une erreur est survenue.')
@@ -133,7 +136,7 @@ export default function Categories() {
                                     🚗 Voir les voitures ({c.voitures_count ?? 0})
                                 </button>
                                 <div className="flex gap-2">
-                                    <button className="btn btn-secondary py-1 px-3 text-xs flex-1" onClick={() => { setSelected(c); setErrors({}); setModal('edit') }}>
+                                    <button className="btn btn-secondary py-1 px-3 text-xs flex-1" onClick={() => { setSelected(c); setErrors({}); setModal('edit'); setApiError('') }}>
                                         Modifier
                                     </button>
                                     <button className="btn btn-danger py-1 px-3 text-xs flex-1" onClick={() => setConfirmId(c.id)}>

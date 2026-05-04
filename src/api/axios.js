@@ -1,11 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'http://localhost/api',
-    headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-    },
+    baseURL: 'http://localhost/api'
 })
 
 // Intercepteur : afficher les erreurs dans la console en dev
