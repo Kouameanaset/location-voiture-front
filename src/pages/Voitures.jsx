@@ -8,6 +8,16 @@ import Pagination from '../components/Pagination'
 
 const emptyForm = { categorie_id: '', marque: '', modele: '', annee: '', immatriculation: '', couleur: '', kilometrage: '', statut: 'disponible' }
 
+/**
+ * Composant formulaire création / modification
+ * @param initial
+ * @param categories
+ * @param onSubmit
+ * @param loading
+ * @param errors
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function VoitureForm({ initial = emptyForm, categories, onSubmit, loading, errors }) {
     const [form, setForm] = useState(initial)
     const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
@@ -74,6 +84,11 @@ function VoitureForm({ initial = emptyForm, categories, onSubmit, loading, error
     )
 }
 
+/**
+ * Page principale voitures
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Voitures() {
     const [voitures, setVoitures]       = useState([])
     const [categories, setCategories]   = useState([])
@@ -166,46 +181,48 @@ export default function Voitures() {
 
             {/* Table */}
             <div className="card p-0 overflow-hidden">
-                <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-100">
-                    <tr>
-                        <th className="table-th">Véhicule</th>
-                        <th className="table-th">Immatriculation</th>
-                        <th className="table-th">Catégorie</th>
-                        <th className="table-th">Kilométrage</th>
-                        <th className="table-th">Statut</th>
-                        <th className="table-th">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {loading ? (
-                        <tr><td colSpan={6} className="table-td text-center text-gray-400 py-10">Chargement...</td></tr>
-                    ) : voitures.length === 0 ? (
-                        <tr><td colSpan={6} className="table-td text-center text-gray-400 py-10">Aucune voiture trouvée.</td></tr>
-                    ) : voitures.map((v) => (
-                        <tr key={v.id} className="table-tr">
-                            <td className="table-td">
-                                <div className="font-medium">{v.marque} {v.modele}</div>
-                                <div className="text-xs text-gray-400">{v.annee} · {v.couleur}</div>
-                            </td>
-                            <td className="table-td font-mono text-xs text-gray-500">{v.immatriculation}</td>
-                            <td className="table-td text-gray-500">{v.categorie?.nom ?? '—'}</td>
-                            <td className="table-td text-gray-500">{Number(v.kilometrage).toLocaleString()} km</td>
-                            <td className="table-td"><Badge statut={v.statut} /></td>
-                            <td className="table-td">
-                                <div className="flex gap-2">
-                                    <button className="btn btn-secondary py-1 px-3 text-xs" onClick={() => { setSelected(toForm(v)); setErrors({}); setModal('edit') }}>
-                                        Modifier
-                                    </button>
-                                    <button className="btn btn-danger py-1 px-3 text-xs" onClick={() => setConfirmId(v.id)}>
-                                        Supprimer
-                                    </button>
-                                </div>
-                            </td>
+                <div className="table-wrapper">
+                    <table className="w-full min-w-[700px]">
+                        <thead className="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                            <th className="table-th">Véhicule</th>
+                            <th className="table-th">Immatriculation</th>
+                            <th className="table-th">Catégorie</th>
+                            <th className="table-th">Kilométrage</th>
+                            <th className="table-th">Statut</th>
+                            <th className="table-th">Actions</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {loading ? (
+                            <tr><td colSpan={6} className="table-td text-center text-gray-400 py-10">Chargement...</td></tr>
+                        ) : voitures.length === 0 ? (
+                            <tr><td colSpan={6} className="table-td text-center text-gray-400 py-10">Aucune voiture trouvée.</td></tr>
+                        ) : voitures.map((v) => (
+                            <tr key={v.id} className="table-tr">
+                                <td className="table-td">
+                                    <div className="font-medium">{v.marque} {v.modele}</div>
+                                    <div className="text-xs text-gray-400">{v.annee} · {v.couleur}</div>
+                                </td>
+                                <td className="table-td font-mono text-xs text-gray-500">{v.immatriculation}</td>
+                                <td className="table-td text-gray-500">{v.categorie?.nom ?? '—'}</td>
+                                <td className="table-td text-gray-500">{Number(v.kilometrage).toLocaleString()} km</td>
+                                <td className="table-td"><Badge statut={v.statut} /></td>
+                                <td className="table-td">
+                                    <div className="flex gap-2">
+                                        <button className="btn btn-secondary py-1 px-3 text-xs" onClick={() => { setSelected(toForm(v)); setErrors({}); setModal('edit') }}>
+                                            Modifier
+                                        </button>
+                                        <button className="btn btn-danger py-1 px-3 text-xs" onClick={() => setConfirmId(v.id)}>
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
                 <Pagination meta={meta} onPageChange={setPage} />
             </div>
 

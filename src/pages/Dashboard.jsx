@@ -6,6 +6,15 @@ import { getClients } from '../api/clients'
 import { getPaiements } from '../api/paiements'
 import Badge from '../components/Badge'
 
+/**
+ * Carte statistique utilisée en haut du tableau de bord
+ * @param label
+ * @param value
+ * @param sub
+ * @param color
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function StatCard({ label, value, sub, color = 'gray' }) {
     const colors = {
         gray:   'bg-gray-50',
@@ -22,6 +31,11 @@ function StatCard({ label, value, sub, color = 'gray' }) {
     )
 }
 
+/**
+ * Page principale du tableau de bord
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Dashboard() {
     const [reservations, setReservations] = useState([])
     const [stats, setStats] = useState({ voituresDispo: 0, clients: 0, revenus: 0, actives: 0 })
@@ -62,15 +76,13 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-400 mt-0.5">{new Date().toLocaleDateString('fr-CA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
                 <StatCard label="Réservations actives" value={stats.actives}        color="blue"  />
                 <StatCard label="Voitures disponibles"  value={stats.voituresDispo} color="green" />
                 <StatCard label="Total clients"         value={stats.clients}       color="gray"  />
                 <StatCard label="Revenus (paiements)"   value={`${stats.revenus} $`} color="amber" />
             </div>
 
-            {/* Réservations récentes */}
             <div className="card">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-base font-medium text-gray-900">Réservations récentes</h2>
@@ -80,37 +92,39 @@ export default function Dashboard() {
                 {loading ? (
                     <p className="text-sm text-gray-400 py-4 text-center">Chargement...</p>
                 ) : (
-                    <table className="w-full">
-                        <thead>
-                        <tr className="border-b border-gray-100">
-                            <th className="table-th">Client</th>
-                            <th className="table-th">Véhicule</th>
-                            <th className="table-th">Début</th>
-                            <th className="table-th">Fin</th>
-                            <th className="table-th">Prix</th>
-                            <th className="table-th">Statut</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {reservations.map((r) => (
-                            <tr key={r.id} className="table-tr">
-                                <td className="table-td font-medium">
-                                    {r.client?.prenom} {r.client?.nom}
-                                </td>
-                                <td className="table-td text-gray-500">
-                                    {r.voiture?.marque} {r.voiture?.modele}
-                                </td>
-                                <td className="table-td text-gray-500">{r.date_debut}</td>
-                                <td className="table-td text-gray-500">{r.date_fin}</td>
-                                <td className="table-td font-medium">{r.prix_total} $</td>
-                                <td className="table-td"><Badge statut={r.statut} /></td>
+                    <div className="table-wrapper">
+                        <table className="w-full min-w-[600px]">
+                            <thead>
+                            <tr className="border-b border-gray-100">
+                                <th className="table-th">Client</th>
+                                <th className="table-th">Véhicule</th>
+                                <th className="table-th">Début</th>
+                                <th className="table-th">Fin</th>
+                                <th className="table-th">Prix</th>
+                                <th className="table-th">Statut</th>
                             </tr>
-                        ))}
-                        {reservations.length === 0 && (
-                            <tr><td colSpan={6} className="table-td text-center text-gray-400 py-6">Aucune réservation.</td></tr>
-                        )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {reservations.map((r) => (
+                                <tr key={r.id} className="table-tr">
+                                    <td className="table-td font-medium">
+                                        {r.client?.prenom} {r.client?.nom}
+                                    </td>
+                                    <td className="table-td text-gray-500">
+                                        {r.voiture?.marque} {r.voiture?.modele}
+                                    </td>
+                                    <td className="table-td text-gray-500">{r.date_debut}</td>
+                                    <td className="table-td text-gray-500">{r.date_fin}</td>
+                                    <td className="table-td font-medium">{r.prix_total} $</td>
+                                    <td className="table-td"><Badge statut={r.statut} /></td>
+                                </tr>
+                            ))}
+                            {reservations.length === 0 && (
+                                <tr><td colSpan={6} className="table-td text-center text-gray-400 py-6">Aucune réservation.</td></tr>
+                            )}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
         </div>

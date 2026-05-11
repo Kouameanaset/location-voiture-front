@@ -1,3 +1,10 @@
+/**
+ * Composant Pagination. Permet de naviguer entre plusieurs pages de résultats
+ * @param meta
+ * @param onPageChange
+ * @returns {JSX.Element|null}
+ * @constructor
+ */
 export default function Pagination({ meta, onPageChange }) {
     if (!meta || meta.last_page <= 1) return null
 

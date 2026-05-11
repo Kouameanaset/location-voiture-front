@@ -6,6 +6,15 @@ import ConfirmDialog from '../components/ConfirmDialog'
 
 const emptyForm = { nom: '', description: '', tarif_journalier: '' }
 
+/**
+ * Sous-composant formulaire catégorie. Sert pour ajout et modification
+ * @param initial
+ * @param onSubmit
+ * @param loading
+ * @param errors
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function CategorieForm({ initial = emptyForm, onSubmit, loading, errors }) {
     const [form, setForm] = useState(initial)
     const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
@@ -35,6 +44,11 @@ function CategorieForm({ initial = emptyForm, onSubmit, loading, errors }) {
     )
 }
 
+/**
+ * Page principale Categories. Gestion CRUD des catégories
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Categories() {
     const [categories, setCategories] = useState([])
     const [loading, setLoading]       = useState(true)
@@ -60,7 +74,6 @@ export default function Categories() {
 
     useEffect(() => { load() }, [load])
 
-    // Charger les voitures quand on ouvre la modal
     const handleVoitures = async (categorie) => {
         setSelected(categorie)
         setModal('voitures')
@@ -119,7 +132,7 @@ export default function Categories() {
                             <div className="flex items-start justify-between">
                                 <div>
                                     <h3 className="font-semibold text-gray-900">{c.nom}</h3>
-                                    <p className="text-xs text-gray-400 mt-0.5">{c.voitures_count ?? '—'} voiture(s)</p>
+                                    <p className="text-xs text-gray-400 mt-0.5">{c.nb_voitures ?? '—'} voiture(s)</p>
                                 </div>
                                 <span className="text-lg font-bold text-gray-900">
                   {c.tarif_journalier} $
@@ -133,7 +146,7 @@ export default function Categories() {
                                     className="btn btn-secondary py-1 px-3 text-xs w-full justify-center"
                                     onClick={() => handleVoitures(c)}
                                 >
-                                    🚗 Voir les voitures ({c.voitures_count ?? 0})
+                                    🚗 Voir les voitures ({c.nb_voitures ?? 0})
                                 </button>
                                 <div className="flex gap-2">
                                     <button className="btn btn-secondary py-1 px-3 text-xs flex-1" onClick={() => { setSelected(c); setErrors({}); setModal('edit'); setApiError('') }}>
@@ -149,12 +162,10 @@ export default function Categories() {
                 </div>
             )}
 
-            {/* Modal create/edit */}
             <Modal isOpen={modal === 'create' || modal === 'edit'} onClose={() => setModal(null)} title={modal === 'edit' ? 'Modifier la catégorie' : 'Nouvelle catégorie'} size="sm">
                 <CategorieForm initial={modal === 'edit' ? selected : emptyForm} onSubmit={handleSave} loading={saving} errors={errors} />
             </Modal>
 
-            {/* Modal voitures de la catégorie */}
             <Modal isOpen={modal === 'voitures'} onClose={() => setModal(null)} title={`Voitures — ${selected?.nom}`} size="lg">
                 {voituresLoading ? (
                     <p className="text-sm text-gray-400 py-4 text-center">Chargement...</p>

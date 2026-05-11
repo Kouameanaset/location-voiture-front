@@ -7,11 +7,20 @@ import Pagination from '../components/Pagination'
 
 const emptyForm = { reservation_id: '', montant: '', methode: 'carte' }
 
+/**
+ * Formulaire de paiement. Permet de sélectionner une réservation et d'enregistrer un paiement.
+ * @param initial
+ * @param reservations
+ * @param onSubmit
+ * @param loading
+ * @param errors
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function PaiementForm({ initial = emptyForm, reservations, onSubmit, loading, errors }) {
     const [form, setForm] = useState(initial)
     const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
-    // Pré-remplir le montant quand on choisit une réservation
     const handleResChange = (e) => {
         const id  = e.target.value
         const res = reservations.find(r => String(r.id) === id)
@@ -57,6 +66,13 @@ function PaiementForm({ initial = emptyForm, reservations, onSubmit, loading, er
     )
 }
 
+/**
+ * Page Paiements
+ * Affiche la liste des paiements avec filtres + pagination.
+ * Permet aussi d'ajouter un nouveau paiement.
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Paiements() {
     const [paiements, setPaiements]     = useState([])
     const [reservations, setReservations] = useState([])
@@ -84,7 +100,6 @@ export default function Paiements() {
     useEffect(() => { load() }, [load])
 
     useEffect(() => {
-        // Charger réservations confirmées sans paiement complété
         getReservations({ statut: 'confirmee', per_page: 100 }).then(r => setReservations(r.data.data))
     }, [])
 
@@ -114,7 +129,6 @@ export default function Paiements() {
 
             {apiError && <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">{apiError}</div>}
 
-            {/* Filtres */}
             <div className="card mb-4 flex flex-wrap gap-3">
                 <select className="input w-44" value={filters.statut} onChange={setFilter('statut')}>
                     <option value="">Tous les statuts</option>
@@ -132,7 +146,6 @@ export default function Paiements() {
                 </select>
             </div>
 
-            {/* Table */}
             <div className="card p-0 overflow-hidden">
                 <table className="w-full">
                     <thead className="bg-gray-50 border-b border-gray-100">

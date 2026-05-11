@@ -1,7 +1,16 @@
 import { useEffect } from 'react'
 
+/**
+ * Composant Modal réutilisable
+ * @param isOpen
+ * @param onClose
+ * @param title
+ * @param children
+ * @param size
+ * @returns {JSX.Element|null}
+ * @constructor
+ */
 export default function Modal({ isOpen, onClose, title, children, size = 'md' }) {
-    // Fermer avec Escape
     useEffect(() => {
         if (!isOpen) return
         const handler = (e) => { if (e.key === 'Escape') onClose() }

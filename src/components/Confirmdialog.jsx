@@ -1,5 +1,16 @@
 import Modal from './Modal'
 
+/**
+ * Composant ConfirmDialog Utilisé pour confirmer une action importante (ex : suppression)
+ * @param isOpen
+ * @param onClose
+ * @param onConfirm
+ * @param title
+ * @param message
+ * @param loading
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function ConfirmDialog({ isOpen, onClose, onConfirm, title, message, loading }) {
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">

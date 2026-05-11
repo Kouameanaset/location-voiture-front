@@ -6,6 +6,15 @@ import Pagination from '../components/Pagination'
 
 const emptyForm = { nom: '', prenom: '', email: '', telephone: '', permis_numero: '', permis_expiration: '' }
 
+/**
+ * Formulaire utilisé pour créer ou modifier un client
+ * @param initial
+ * @param onSubmit
+ * @param loading
+ * @param errors
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function ClientForm({ initial = emptyForm, onSubmit, loading, errors }) {
     const [form, setForm] = useState(initial)
     const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
@@ -54,6 +63,11 @@ function ClientForm({ initial = emptyForm, onSubmit, loading, errors }) {
     )
 }
 
+/**
+ * Page principale de gestion des clients
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Clients() {
     const [clients, setClients]         = useState([])
     const [meta, setMeta]               = useState(null)
@@ -126,7 +140,6 @@ export default function Clients() {
                 <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">{apiError}</div>
             )}
 
-            {/* Filtres */}
             <div className="card mb-4">
                 <input
                     className="input max-w-xs"
@@ -136,49 +149,49 @@ export default function Clients() {
                 />
             </div>
 
-            {/* Table */}
             <div className="card p-0 overflow-hidden">
-                <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-100">
-                    <tr>
-                        <th className="table-th">Nom</th>
-                        <th className="table-th">Courriel</th>
-                        <th className="table-th">Téléphone</th>
-                        <th className="table-th">Permis</th>
-                        <th className="table-th">Expiration</th>
-                        <th className="table-th">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {loading ? (
-                        <tr><td colSpan={6} className="table-td text-center text-gray-400 py-10">Chargement...</td></tr>
-                    ) : clients.length === 0 ? (
-                        <tr><td colSpan={6} className="table-td text-center text-gray-400 py-10">Aucun client trouvé.</td></tr>
-                    ) : clients.map((c) => (
-                        <tr key={c.id} className="table-tr">
-                            <td className="table-td font-medium">{c.prenom} {c.nom}</td>
-                            <td className="table-td text-gray-500">{c.email}</td>
-                            <td className="table-td text-gray-500">{c.telephone ?? '—'}</td>
-                            <td className="table-td text-gray-500 font-mono text-xs">{c.permis_numero}</td>
-                            <td className="table-td text-gray-500">{c.permis_expiration}</td>
-                            <td className="table-td">
-                                <div className="flex gap-2">
-                                    <button className="btn btn-secondary py-1 px-3 text-xs" onClick={() => { setSelected(c); setErrors({}); setModal('edit') }}>
-                                        Modifier
-                                    </button>
-                                    <button className="btn btn-danger py-1 px-3 text-xs" onClick={() => setConfirmId(c.id)}>
-                                        Supprimer
-                                    </button>
-                                </div>
-                            </td>
+                <div className="table-wrapper">
+                    <table className="w-full min-w-[700px]">
+                        <thead className="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                            <th className="table-th">Nom</th>
+                            <th className="table-th">Courriel</th>
+                            <th className="table-th">Téléphone</th>
+                            <th className="table-th">Permis</th>
+                            <th className="table-th">Expiration</th>
+                            <th className="table-th">Actions</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {loading ? (
+                            <tr><td colSpan={6} className="table-td text-center text-gray-400 py-10">Chargement...</td></tr>
+                        ) : clients.length === 0 ? (
+                            <tr><td colSpan={6} className="table-td text-center text-gray-400 py-10">Aucun client trouvé.</td></tr>
+                        ) : clients.map((c) => (
+                            <tr key={c.id} className="table-tr">
+                                <td className="table-td font-medium">{c.prenom} {c.nom}</td>
+                                <td className="table-td text-gray-500">{c.email}</td>
+                                <td className="table-td text-gray-500">{c.telephone ?? '—'}</td>
+                                <td className="table-td text-gray-500 font-mono text-xs">{c.permis_numero}</td>
+                                <td className="table-td text-gray-500">{c.permis_expiration}</td>
+                                <td className="table-td">
+                                    <div className="flex gap-2">
+                                        <button className="btn btn-secondary py-1 px-3 text-xs" onClick={() => { setSelected(c); setErrors({}); setModal('edit') }}>
+                                            Modifier
+                                        </button>
+                                        <button className="btn btn-danger py-1 px-3 text-xs" onClick={() => setConfirmId(c.id)}>
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
                 <Pagination meta={meta} onPageChange={setPage} />
             </div>
 
-            {/* Modal create/edit */}
             <Modal
                 isOpen={!!modal}
                 onClose={() => setModal(null)}
@@ -192,7 +205,6 @@ export default function Clients() {
                 />
             </Modal>
 
-            {/* Confirm delete */}
             <ConfirmDialog
                 isOpen={!!confirmId}
                 onClose={() => setConfirmId(null)}

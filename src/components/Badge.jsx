@@ -16,6 +16,12 @@ const config = {
     echoue:      { label: 'Échoué',      classes: 'bg-red-50 text-red-800 border border-red-200' },
 }
 
+/**
+ * Composant Badge
+ * @param statut
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Badge({ statut }) {
     const { label, classes } = config[statut] ?? { label: statut, classes: 'bg-gray-100 text-gray-600' }
     return (

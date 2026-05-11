@@ -9,17 +9,27 @@ import Pagination from '../components/Pagination'
 
 const emptyForm = { client_id: '', voiture_id: '', date_debut: '', date_fin: '', notes: '' }
 
+/**
+ * Formulaire de création de réservation
+ * @param initial
+ * @param clients
+ * @param voitures
+ * @param onSubmit
+ * @param loading
+ * @param errors
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function ReservationForm({ initial = emptyForm, clients, voitures, onSubmit, loading, errors }) {
     const [form, setForm] = useState(initial)
     const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
-    // Calculer le prix estimé
-    const voiture  = voitures.find(v => String(v.id) === String(form.voiture_id))
-    const nbJours  = form.date_debut && form.date_fin
+    const voiture = voitures.find(v => String(v.id) === String(form.voiture_id))
+    const nbJours = form.date_debut && form.date_fin
         ? Math.max(0, (new Date(form.date_fin) - new Date(form.date_debut)) / 86400000)
         : 0
-    const prixEst  = voiture && nbJours > 0
-        ? (nbJours * parseFloat(voiture.categorie?.tarif_journalier ?? 0)).toFixed(2)
+    const prixEstime = voiture?.categorie?.tarif_journalier && nbJours > 0
+        ? (nbJours * parseFloat(voiture.categorie.tarif_journalier)).toFixed(2)
         : null
 
     return (
@@ -56,11 +66,14 @@ function ReservationForm({ initial = emptyForm, clients, voitures, onSubmit, loa
                     {errors?.date_fin && <p className="text-xs text-red-500 mt-1">{errors.date_fin[0]}</p>}
                 </div>
             </div>
-            {prixEst && (
-                <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-3 text-sm text-blue-800">
-                    Prix estimé : <strong>{prixEst} $</strong> ({nbJours} jour{nbJours > 1 ? 's' : ''} × {voiture.categorie?.tarif_journalier} $/jour)
+
+            {prixEstime && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-600">
+                    Aperçu : <span className="font-medium text-gray-900">{prixEstime} $</span>
+                    <span className="text-gray-400 ml-1">({nbJours} jour{nbJours > 1 ? 's' : ''} × {voiture.categorie.tarif_journalier} $/jour — confirmé par le serveur)</span>
                 </div>
             )}
+
             <div>
                 <label className="label">Notes</label>
                 <textarea className="input" rows={2} value={form.notes} onChange={set('notes')} placeholder="Instructions particulières..." />
@@ -74,6 +87,14 @@ function ReservationForm({ initial = emptyForm, clients, voitures, onSubmit, loa
     )
 }
 
+/**
+ * Formulaire de changement de statut
+ * @param current
+ * @param onSubmit
+ * @param loading
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function StatutForm({ current, onSubmit, loading }) {
     const [statut, setStatut] = useState(current)
     const options = ['en_attente', 'confirmee', 'en_cours', 'terminee', 'annulee']
@@ -94,6 +115,11 @@ function StatutForm({ current, onSubmit, loading }) {
     )
 }
 
+/**
+ * Page Réservations
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export default function Reservations() {
     const [reservations, setReservations] = useState([])
     const [clients, setClients]           = useState([])
@@ -174,7 +200,6 @@ export default function Reservations() {
 
             {apiError && <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">{apiError}</div>}
 
-            {/* Filtres */}
             <div className="card mb-4 flex flex-wrap gap-3 items-end">
                 <div>
                     <label className="label">Statut</label>
@@ -193,47 +218,48 @@ export default function Reservations() {
                 </div>
             </div>
 
-            {/* Table */}
             <div className="card p-0 overflow-hidden">
-                <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-100">
-                    <tr>
-                        <th className="table-th">Client</th>
-                        <th className="table-th">Véhicule</th>
-                        <th className="table-th">Début</th>
-                        <th className="table-th">Fin</th>
-                        <th className="table-th">Prix total</th>
-                        <th className="table-th">Statut</th>
-                        <th className="table-th">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {loading ? (
-                        <tr><td colSpan={7} className="table-td text-center text-gray-400 py-10">Chargement...</td></tr>
-                    ) : reservations.length === 0 ? (
-                        <tr><td colSpan={7} className="table-td text-center text-gray-400 py-10">Aucune réservation trouvée.</td></tr>
-                    ) : reservations.map((r) => (
-                        <tr key={r.id} className="table-tr">
-                            <td className="table-td font-medium">{r.client?.prenom} {r.client?.nom}</td>
-                            <td className="table-td text-gray-500">{r.voiture?.marque} {r.voiture?.modele}</td>
-                            <td className="table-td text-gray-500">{r.date_debut}</td>
-                            <td className="table-td text-gray-500">{r.date_fin}</td>
-                            <td className="table-td font-medium">{r.prix_total} $</td>
-                            <td className="table-td"><Badge statut={r.statut} /></td>
-                            <td className="table-td">
-                                <div className="flex gap-2">
-                                    <button className="btn btn-secondary py-1 px-3 text-xs" onClick={() => { setSelected(r); setModal('statut') }}>
-                                        Statut
-                                    </button>
-                                    <button className="btn btn-danger py-1 px-3 text-xs" onClick={() => setConfirmId(r.id)}>
-                                        Supprimer
-                                    </button>
-                                </div>
-                            </td>
+                <div className="table-wrapper">
+                    <table className="w-full min-w-[750px]">
+                        <thead className="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                            <th className="table-th">Client</th>
+                            <th className="table-th">Véhicule</th>
+                            <th className="table-th">Début</th>
+                            <th className="table-th">Fin</th>
+                            <th className="table-th">Prix total</th>
+                            <th className="table-th">Statut</th>
+                            <th className="table-th">Actions</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {loading ? (
+                            <tr><td colSpan={7} className="table-td text-center text-gray-400 py-10">Chargement...</td></tr>
+                        ) : reservations.length === 0 ? (
+                            <tr><td colSpan={7} className="table-td text-center text-gray-400 py-10">Aucune réservation trouvée.</td></tr>
+                        ) : reservations.map((r) => (
+                            <tr key={r.id} className="table-tr">
+                                <td className="table-td font-medium">{r.client?.prenom} {r.client?.nom}</td>
+                                <td className="table-td text-gray-500">{r.voiture?.marque} {r.voiture?.modele}</td>
+                                <td className="table-td text-gray-500">{r.date_debut}</td>
+                                <td className="table-td text-gray-500">{r.date_fin}</td>
+                                <td className="table-td font-medium">{r.prix_total} $</td>
+                                <td className="table-td"><Badge statut={r.statut} /></td>
+                                <td className="table-td">
+                                    <div className="flex gap-2">
+                                        <button className="btn btn-secondary py-1 px-3 text-xs" onClick={() => { setSelected(r); setModal('statut') }}>
+                                            Statut
+                                        </button>
+                                        <button className="btn btn-danger py-1 px-3 text-xs" onClick={() => setConfirmId(r.id)}>
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
                 <Pagination meta={meta} onPageChange={setPage} />
             </div>
 
