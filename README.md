@@ -1,16 +1,56 @@
-# React + Vite
+# Location de voitures — Interface web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface de gestion (tableau de bord) pour une agence de location de voitures. Elle consomme l'API Laravel du dépôt [location-voitures-api](https://github.com/Kouameanaset/location-voitures-api).
 
-Currently, two official plugins are available:
+## Technologies
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 et Vite
+- React Router (navigation entre les pages)
+- Axios (appels HTTP vers l'API)
+- Tailwind CSS 4
 
-## React Compiler
+## Fonctionnalités
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Tableau de bord** : statistiques (voitures disponibles, clients, revenus, réservations actives) et dernières réservations.
+- **Voitures** : liste avec filtres (statut, catégorie, recherche), création, modification et suppression.
+- **Réservations** : liste filtrable et paginée, création avec aperçu du prix estimé (nombre de jours × tarif journalier de la catégorie), changement de statut. Le prix final est confirmé par le serveur.
+- **Clients, catégories et paiements** : pages de gestion avec formulaires modaux.
+- Composants réutilisables : fenêtre modale, boîte de confirmation, pagination, badges de statut, barre latérale.
 
-## Expanding the ESLint configuration
+## Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+src/
+  api/          Fonctions d'appel à l'API (une par ressource) et client Axios
+  components/   Composants réutilisables
+  pages/        Dashboard, Voitures, Reservations, Clients, Categories, Paiements
+```
+
+## Installation
+
+Prérequis : Node.js et npm, et l'API démarrée.
+
+```bash
+npm install
+npm run dev
+```
+
+L'URL de l'API est définie dans `src/api/axios.js` (`http://localhost/api` par défaut). Modifiez-la si l'API tourne ailleurs, par exemple `http://localhost:8000/api` avec `php artisan serve`.
+
+## Commandes
+
+| Commande | Description |
+| --- | --- |
+| `npm run dev` | Serveur de développement |
+| `npm run build` | Build de production |
+| `npm run preview` | Sert le build localement |
+| `npm run lint` | Analyse du code avec ESLint |
+
+## Limites connues
+
+- Pas de page de connexion : l'API n'est pas encore protégée.
+- Pas de tests automatisés.
+
+## Projet scolaire
+
+Projet réalisé dans le cadre du programme Techniques de l'informatique, Cégep Saint-Jean-sur-Richelieu.
